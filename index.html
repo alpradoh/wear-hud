@@ -63,7 +63,6 @@
   </style>
 </head>
 <body>
-  <!-- Añadimos webkit-playsinline para iOS -->
   <video id="video" autoplay muted playsinline webkit-playsinline></video>
   <button id="startButton">Iniciar Cámara</button>
 
@@ -75,12 +74,14 @@
   </div>
 
   <div class="hud" id="hud-people">
-    👥 Personas: <span id="people">0</span>
+    <div id="datetime">--</div>
+    <div>👥 Personas: <span id="people">0</span></div>
   </div>
 
   <div class="hud" id="hud-vehicles">
     <div>🚗 Autos: <span id="cars">0</span></div>
     <div>🏍️ Motos: <span id="bikes">0</span></div>
+    <div>🚲 Bicicletas: <span id="bicycles">0</span></div>
     <div>🚚 Camiones: <span id="trucks">0</span></div>
   </div>
 
@@ -94,17 +95,13 @@
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
         const video = document.getElementById('video');
         video.srcObject = stream;
-        // Asegurar playsinline en iOS
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
-        // Reproducir
         await video.play();
 
-        // Ocultar botón y mostrar HUDs
         document.getElementById('startButton').style.display = 'none';
         document.querySelectorAll('.hud').forEach(el => el.style.display = 'block');
 
-        // Iniciar dashboards
         initDashboards();
       } catch (err) {
         alert('No se pudo acceder a la cámara: ' + err.message);
@@ -112,7 +109,12 @@
     });
 
     function initDashboards() {
-      // Meteorológico
+      // Fecha y hora
+      setInterval(() => {
+        document.getElementById('datetime').textContent = new Date().toLocaleString();
+      }, 1000);
+
+      // Dashboard Meteorológico
       setInterval(() => {
         document.getElementById('temp').textContent = (20 + Math.random() * 10).toFixed(1);
         document.getElementById('uv').textContent = (Math.random() * 11).toFixed(1);
@@ -120,7 +122,7 @@
         document.getElementById('wind').textContent = (5 + Math.random() * 20).toFixed(0);
       }, 1000);
 
-      // Personas
+      // Dashboard Personas
       let people = 0;
       setInterval(() => {
         people++;
@@ -130,10 +132,11 @@
         setTimeout(() => el.classList.remove('count-change'), 500);
       }, 2000);
 
-      // Vehículos
+      // Dashboard Vehículos
       setInterval(() => {
         document.getElementById('cars').textContent = Math.floor(Math.random() * 20);
         document.getElementById('bikes').textContent = Math.floor(Math.random() * 10);
+        document.getElementById('bicycles').textContent = Math.floor(Math.random() * 15);
         document.getElementById('trucks').textContent = Math.floor(Math.random() * 5);
       }, 3000);
     }
